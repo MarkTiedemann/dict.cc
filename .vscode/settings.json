@@ -1,0 +1,4 @@
+{
+  "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, IndentWidth: 4 }",
+  "C_Cpp.autoAddFileAssociations": false
+}
