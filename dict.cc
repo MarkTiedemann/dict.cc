@@ -1,83 +1,84 @@
-#include <cstring>
 #include <curl/curl.h>
 #include <iostream>
-#include <libxml/HTMLparser.h>
+#include <iterator>
+#include <sstream>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 int on_write(char *data, size_t size, size_t len, string *buf) {
-    if (buf == NULL)
-        return 0;
-    buf->append(data, size * len);
-    return size * len;
+  if (buf == NULL) {
+    return 0;
+  }
+  buf->append(data, size * len);
+  return size * len;
 }
 
 string http_get(string url, string query) {
-    CURL *curl = curl_easy_init();
-    char *enc_query = curl_easy_escape(curl, query.c_str(), query.length());
-    url.append(enc_query);
-    curl_free(enc_query);
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    string buf;
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buf);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_write);
-    CURLcode code = curl_easy_perform(curl);
-    curl_easy_cleanup(curl);
-    return code == CURLE_OK ? buf : "";
+  CURL *curl = curl_easy_init();
+  char *enc_query = curl_easy_escape(curl, query.c_str(), query.length());
+  url.append(enc_query);
+  curl_free(enc_query);
+  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+  string buf;
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buf);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, on_write);
+  CURLcode code = curl_easy_perform(curl);
+  curl_easy_cleanup(curl);
+  return code == CURLE_OK ? buf : "";
 }
 
-void on_start_element(void *ctx, const xmlChar *name, const xmlChar **atts) {
-    if (xmlStrcmp((xmlChar *)"tr", name) == 0) {
-        if (atts == NULL)
-            return;
-        int i = 0;
-        const xmlChar *att = atts[i++];
-        while (att != NULL) {
-            const xmlChar *value = atts[i++];
-            if (xmlStrcmp((xmlChar *)"id", att) == 0 && xmlStrlen(value) > 2 &&
-                xmlStrncmp((xmlChar *)"tr", value, 2) == 0) {
-                cout << "tr_id: " << value << endl;
-            }
-            att = atts[i++];
-        }
-    }
+void replace_str(string *str, const string &from, const string &to) {
+  size_t start_pos = 0;
+  while ((start_pos = str->find(from, start_pos)) != string::npos) {
+    str->replace(start_pos, from.length(), to);
+    start_pos += to.length();
+  }
 }
 
-void on_end_element(void *ctx, const xmlChar *name) {
-    if (xmlStrcmp((xmlChar *)"tr", name) == 0) {
-        cout << "tr_end" << endl;
-    }
-}
-
-void on_characters(void *ctx, const xmlChar *chars, int len) {
-    // cout << "on_characters: " << chars << endl;
-}
-
-void parse_html(string html) {
-    htmlSAXHandler handler = {
-        NULL,           NULL, NULL,          NULL, NULL,
-        NULL,           NULL, NULL,          NULL, NULL,
-        NULL,           NULL, NULL,          NULL, on_start_element,
-        on_end_element, NULL, on_characters, NULL, NULL,
-        NULL,           NULL, NULL,          NULL, NULL,
-        NULL,           NULL};
-    htmlParserCtxtPtr ctxt = htmlCreatePushParserCtxt(&handler, NULL, "", 0, "",
-                                                      XML_CHAR_ENCODING_NONE);
-    htmlParseChunk(ctxt, html.c_str(), html.size(), 0);
-    htmlFreeParserCtxt(ctxt);
+string join_str(vector<string> strs) {
+  ostringstream stream;
+  auto b = begin(strs), e = end(strs);
+  if (b != e) {
+    copy(b, prev(e), ostream_iterator<string>(stream, " "));
+    b = prev(e);
+  }
+  if (b != e) {
+    stream << *b;
+  }
+  return stream.str();
 }
 
 int main(int argc, char *argv[]) {
-    string query = "Beispiel";
-    string url = "https://www.dict.cc/?s=";
-
-    string body = http_get(url, query);
-    if (body == "")
-        return 1;
-
-    parse_html(body);
-
-    // cout << body << endl;
-    return 0;
+  vector<string> args(argv + 1, argv + argc);
+  string query = join_str(args);
+  string url = "https://www.dict.cc/?s=";
+  string body = http_get(url, query);
+  if (body == "") {
+    return 1;
+  }
+  // TODO: adjust indices to account for str length
+  // TODO: find closing ">" of open tag
+  int open_tr = 0, close_tr = 0;
+  while ((open_tr = body.find("<tr id", close_tr)) != string::npos &&
+         (close_tr = body.find("</tr>", open_tr)) != string::npos) {
+    int open_td = 0, close_td = open_tr;
+    while ((open_td = body.find("<td", close_td)) != string::npos &&
+           (close_td = body.find("</td>", open_td)) != string::npos &&
+           open_td < close_tr) {
+      int open_a = 0, close_a = open_td;
+      while ((open_a = body.find("<a", close_a)) != string::npos &&
+             (close_a = body.find("</a>", open_a)) != string::npos &&
+             open_a < close_td) {
+        string a = body.substr(open_a, close_a - open_a);
+        replace_str(&a, "<b>", "");
+        replace_str(&a, "</b>", "");
+        replace_str(&a, "&lt;", "<");
+        replace_str(&a, "&gt;", ">");
+        cout << a << endl;
+      }
+    }
+  }
+  return 0;
 }
