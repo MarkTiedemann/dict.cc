@@ -2,7 +2,7 @@
 
 **Command line interface for [dict.cc](https://dict.cc).**
 
-## Quickstart
+## Example
 
 ```
 $ dict Paradebeispiel
@@ -20,10 +20,17 @@ poster child                  | Paradebeispiel [Person]
 
 ## Installation
 
-**MacOS:**
+**MacOS - [Node](https://nodejs.org):**
 
 ```sh
 curl -o /usr/local/bin/dict https://raw.githubusercontent.com/MarkTiedemann/dict.cc/master/dict.js
+chmod +x /usr/local/bin/dict
+```
+
+**MacOS - [Deno](https://deno.land):**
+
+```sh
+curl -o /usr/local/bin/dict https://raw.githubusercontent.com/MarkTiedemann/dict.cc/master/dict.ts
 chmod +x /usr/local/bin/dict
 ```
 
