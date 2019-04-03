@@ -1,7 +1,7 @@
 #!/usr/bin/env deno --allow-net
 (async function () {
   let query = encodeURI(Deno.args.slice(1).join(' '))
-  let res = await fetch('https://www.dict.cc/?s=' + query);
+  let res = await fetch('https://www.dict.cc/?s=' + query)
   let body = await res.text()
   let trans = body
     .match(/<tr id='tr\d+'>(.*?)<\/tr>/g)
