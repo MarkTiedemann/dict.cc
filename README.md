@@ -5,17 +5,23 @@
 ## Example
 
 ```
-$ dict Paradebeispiel
-paragon                       | Paradebeispiel
-exhibit [fig.] [best example] | Paradebeispiel
-parade example                | Paradebeispiel
-paramount example             | Paradebeispiel
-prime example                 | Paradebeispiel
-supreme example               | Paradebeispiel
-textbook example              | Paradebeispiel
-case in point                 | Paradebeispiel
-example par excellence        | Paradebeispiel
-poster child                  | Paradebeispiel [Person]
+$ dict Beispiel
+instance               | Beispiel
+example <ex>           | Beispiel <Bsp., Beisp.>
+paradigm               | Beispiel [Vorbild, Modell]
+sample                 | Beispiel
+model                  | Beispiel
+illustration [example] | Beispiel
+for instance [coll.]   | Beispiel
+as an example          | als Beispiel
+by way of example      | als Beispiel
+by way of illustration | als Beispiel [zur Veranschaulichung]
+without precedent      | ohne Beispiel
+say                    | zum Beispiel <z. B.>
+exempli gratia <e.g.>  | zum Beispiel <z. B.>
+for example <e.g.>     | zum Beispiel <z. B.>
+for instance <f.i.>    | zum Beispiel <z. B.>
+
 ```
 
 ## Installation
