@@ -1,1 +1,4 @@
 dict
+curl-*
+clang+llvm-*
+MacOSX*.sdk
