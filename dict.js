@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 let https = require('https')
-let color = process.env.NO_COLOR ? false : true
-let timeout = process.env.DICT_TIMEOUT ? parseInt(process.env.DICT_TIMEOUT) : 10000
-let page_size = process.env.DICT_PAGE_SIZE ? parseInt(process.env.DICT_PAGE_SIZE) : 15
+let env = process.env
+let color = env.NO_COLOR ? false : true
+let timeout = env.DICT_TIMEOUT ? parseInt(env.DICT_TIMEOUT) : 10000
+let page_size = env.DICT_PAGE_SIZE ? parseInt(env.DICT_PAGE_SIZE) : 15
 let exit = msg => {
   if (color) msg = msg.replace(/E(\w+)/, `\x1b[35m$1\x1b[0m`)
   let div = color ? '\x1b[31mERR!\x1b[0m' : 'ERR!'
