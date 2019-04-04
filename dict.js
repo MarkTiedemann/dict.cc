@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 let https = require('https')
 let env = process.env
-let color = env.NO_COLOR ? false : true
+let color_stdout = env.NO_COLOR ? false : process.stdout.isTTY
+let color_stderr = env.NO_COLOR ? false : process.stderr.isTTY
 let timeout = env.DICT_TIMEOUT ? parseInt(env.DICT_TIMEOUT) : 10000
 let page_size = env.DICT_PAGE_SIZE ? parseInt(env.DICT_PAGE_SIZE) : 15
 let exit = msg => {
-  if (color) msg = msg.replace(/E(\w+)/, `\x1b[35m$1\x1b[0m`)
-  let div = color ? '\x1b[31mERR!\x1b[0m' : 'ERR!'
+  if (color_stderr) msg = msg.replace(/E(\w+)/, `\x1b[35m$1\x1b[0m`)
+  let div = color_stderr ? '\x1b[31mERR!\x1b[0m' : 'ERR!'
   console.error(`dict ${div} ${msg}`)
   process.exit(1)
 }
@@ -43,7 +44,7 @@ let req = https.request({
       ))
     if (trans.length > page_size) trans.splice(page_size)
     let len = Math.max(...trans.map(t => t[0].length))
-    let div = color ? '\x1b[35m|\x1b[0m' : '|'
+    let div = color_stdout ? '\x1b[35m|\x1b[0m' : '|'
     trans.forEach(t => console.log(`${t[0].padEnd(len)} ${div} ${t[1]}`))
   })
 })
