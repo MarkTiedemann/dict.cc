@@ -45,6 +45,10 @@ chmod +x /usr/local/bin/dict
 - Provide installation instructions for Windows
 - Finish C++ implementation
 - Add CI, including tests and automated releases
+- Implement pagination (dict has a limit of 50 items per page; there can be multiple pages; use "pagenum" query param)
+- Implement suggestions (e.g https://www.dict.cc/?s=eexample -> Did you mean "example"?)
+- Use HTTP caching (ETag -> If-None-Match); save ETags and responses in OS cache dir
+- Improve user experience for poor connectivity; show progress bar based on Content-Length
 
 ## License
 
